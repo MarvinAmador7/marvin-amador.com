@@ -115,79 +115,31 @@ a:focus-visible {
   outline-offset: 5px;
 }
 
-.site-header,
 .home-shell,
 .page-shell,
 .detail-shell,
-.article-shell,
-.site-footer {
+.article-shell {
   margin: 0 auto;
   max-width: 1040px;
   padding-left: 28px;
   padding-right: 28px;
 }
 
-.site-header {
-  align-items: center;
-  background: rgba(8, 8, 8, 0.88);
-  backdrop-filter: blur(14px);
-  display: flex;
-  height: 88px;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-.brand,
-.nav-links,
 .hero-links,
 .text-link,
 .back-link,
-.article-byline,
-.site-footer div {
+.article-byline {
   align-items: center;
   display: flex;
 }
 
-.brand {
-  gap: 11px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.brand-mark {
-  align-items: center;
-  border: 1px solid var(--text);
-  display: inline-flex;
-  height: 28px;
-  justify-content: center;
-  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
-  width: 28px;
-}
-
-.brand:hover .brand-mark {
-  background: var(--text);
-  color: var(--canvas);
-  transform: rotate(-7deg);
-}
-
-.nav-links {
-  gap: 28px;
-}
-
-.nav-links a,
-.hero-links a,
-.site-footer a {
+.hero-links a {
   color: var(--muted);
   font-size: 0.76rem;
   transition: color 160ms ease;
 }
 
-.nav-links a:hover,
-.hero-links a:hover,
-.site-footer a:hover {
+.hero-links a:hover {
   color: var(--text);
 }
 
@@ -2068,21 +2020,6 @@ pre {
   padding: 24px;
 }
 
-.site-footer {
-  align-items: center;
-  border-top: 1px solid var(--line);
-  color: var(--quiet);
-  display: flex;
-  font-size: 0.68rem;
-  justify-content: space-between;
-  min-height: 130px;
-  text-transform: uppercase;
-}
-
-.site-footer div {
-  gap: 24px;
-}
-
 .hero-copy,
 .section-heading,
 .project-card,
@@ -2170,30 +2107,12 @@ pre {
 }
 
 @media (max-width: 640px) {
-  .site-header,
   .home-shell,
   .page-shell,
   .detail-shell,
-  .article-shell,
-  .site-footer {
+  .article-shell {
     padding-left: 20px;
     padding-right: 20px;
-  }
-
-  .site-header {
-    height: 76px;
-  }
-
-  .brand-name {
-    display: none;
-  }
-
-  .nav-links {
-    gap: 17px;
-  }
-
-  .nav-links a {
-    font-size: 0.66rem;
   }
 
   .hero-section {
@@ -2658,18 +2577,6 @@ pre {
     align-items: flex-start;
     flex-direction: column;
     gap: 9px;
-  }
-
-  .site-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    padding-bottom: 28px;
-    padding-top: 28px;
-  }
-
-  .site-footer div {
-    margin-top: 12px;
   }
 }
 
