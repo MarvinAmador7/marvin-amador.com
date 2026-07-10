@@ -25,7 +25,7 @@ export default function Home() {
             {profile.availability}
           </p>
           <div className="mt-[78px] mb-[90px] max-w-[810px] max-[640px]:mt-[60px] max-[640px]:mb-[60px] [animation:reveal_600ms_both]">
-            <h1 className="m-0 mb-[38px] font-heading text-[6.5rem] font-medium leading-[0.86] max-[640px]:text-[4rem] max-[640px]:mb-[30px]">
+            <h1 className="m-0 mb-[38px] font-heading text-[6.5rem] font-medium leading-[0.86] max-[840px]:text-[5rem] max-[640px]:text-[4rem] max-[640px]:mb-[30px]">
               {profile.name}
               <span className="text-primary">.</span>
             </h1>
@@ -74,7 +74,7 @@ export default function Home() {
           className="border-t border-line pt-[116px] pb-[132px] grid grid-cols-[minmax(280px,0.82fr)_minmax(420px,1.18fr)] gap-[82px] max-[640px]:pt-[82px] max-[640px]:pb-[94px] max-[840px]:grid-cols-[minmax(0,1fr)] max-[840px]:gap-[52px]"
           aria-labelledby="technical-writing"
         >
-          <div className="grid grid-cols-[42px_minmax(0,1fr)] gap-6 items-start m-0 sticky top-[126px] [animation:reveal_600ms_both] max-[840px]:static max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
+          <div className="grid grid-cols-[42px_minmax(0,1fr)] m-0 sticky top-[126px] [animation:reveal_600ms_both] max-[840px]:static max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
             <p className="m-0 text-quiet text-[0.7rem] uppercase">02</p>
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Technical writing</p>
@@ -110,7 +110,7 @@ export default function Home() {
           <div className="border-t border-line grid grid-cols-2 max-[640px]:grid-cols-1">
             {principles.map((principle, index) => (
               <article
-                className="border-b border-line grid gap-[14px] grid-cols-[38px_1fr] min-h-[190px] pt-7 pr-[34px] pb-7 pl-0 odd:border-r odd:border-line even:pl-[34px] max-[640px]:border-r-0 max-[640px]:py-[26px] max-[640px]:px-0"
+                className="border-b border-line grid gap-[14px] grid-cols-[38px_1fr] min-h-[190px] pt-7 pr-[34px] pb-7 pl-0 odd:border-r odd:border-line even:pl-[34px] max-[640px]:odd:border-r-0 max-[640px]:even:pl-0 max-[640px]:py-[26px] max-[640px]:pr-0"
                 key={principle.title}
               >
                 <span className="text-quiet text-[0.68rem]">{String(index + 1).padStart(2, "0")}</span>
