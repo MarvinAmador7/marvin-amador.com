@@ -45,7 +45,7 @@ export function ProjectVisual({ project, compact = false }: { project: Project; 
       <div className="relative border-t border-line">
         {project.metrics.map((metric, index) => (
           <span key={metric} className="grid grid-cols-[26px_1fr] gap-3 border-b border-line px-4 py-[10px] text-[0.68rem] uppercase">
-            <small className="text-quiet">{String(index + 1).padStart(2, "0")}</small>
+            <small className="text-quiet text-[0.68rem]">{String(index + 1).padStart(2, "0")}</small>
             {metric}
           </span>
         ))}
