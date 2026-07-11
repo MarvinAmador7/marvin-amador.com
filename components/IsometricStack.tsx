@@ -65,14 +65,14 @@ function insetRhombus(cy: number, scale = 0.6) {
 
 function Marker({ kind, x, y }: { kind: string; x: number; y: number }) {
   if (kind === "core") {
-    return <path d={`M ${x} ${y - 5.5} L ${x + 5.5} ${y} L ${x} ${y + 5.5} L ${x - 5.5} ${y} Z`} fill="var(--accent)" />;
+    return <path d={`M ${x} ${y - 5.5} L ${x + 5.5} ${y} L ${x} ${y + 5.5} L ${x - 5.5} ${y} Z`} fill="var(--primary)" />;
   }
   if (kind === "diamond") {
     return (
       <path
         d={`M ${x} ${y - 5.5} L ${x + 5.5} ${y} L ${x} ${y + 5.5} L ${x - 5.5} ${y} Z`}
         fill="none"
-        stroke="var(--muted)"
+        stroke="var(--color-dim)"
         strokeWidth={1.1}
       />
     );
@@ -84,11 +84,11 @@ function Marker({ kind, x, y }: { kind: string; x: number; y: number }) {
         return `${(x + Math.cos(a) * 6).toFixed(2)} ${(y + Math.sin(a) * 6).toFixed(2)}`;
       })
       .join(" L ");
-    return <path d={`M ${pts} Z`} fill="none" stroke="var(--muted)" strokeWidth={1.1} />;
+    return <path d={`M ${pts} Z`} fill="none" stroke="var(--color-dim)" strokeWidth={1.1} />;
   }
   // ring (durability)
   return (
-    <g fill="none" stroke="var(--muted)" strokeWidth={1.1}>
+    <g fill="none" stroke="var(--color-dim)" strokeWidth={1.1}>
       <path d={`M ${x + 5} ${y - 1.6} A 5.2 5.2 0 1 1 ${x - 3.6} ${y - 3.6}`} strokeLinecap="round" />
       <path d={`M ${x - 3.6} ${y - 5.8} L ${x - 3.6} ${y - 3.2} L ${x - 1} ${y - 3.4}`} strokeLinecap="round" strokeLinejoin="round" />
     </g>
@@ -150,7 +150,7 @@ export function IsometricStack() {
       <path
         className="iso-glow opacity-40 [transition:opacity_0.55s_ease] motion-reduce:[transition:none]"
         d={topFace(CY[3])}
-        fill="var(--accent)"
+        fill="var(--primary)"
         filter="url(#isoGlow)"
       />
 
@@ -185,7 +185,7 @@ export function IsometricStack() {
             <text
               x={LABEL_X}
               y={cy - 2.5}
-              fill={accent ? "var(--accent)" : "var(--text)"}
+              fill={accent ? "var(--primary)" : "var(--text)"}
               style={{ fontFamily: "var(--font-ui)", fontSize: "11px", letterSpacing: "1.5px" }}
             >
               {layer.name}
@@ -193,7 +193,7 @@ export function IsometricStack() {
             <text
               x={LABEL_X}
               y={cy + 10}
-              fill="var(--muted)"
+              fill="var(--color-dim)"
               style={{ fontFamily: "var(--font-ui)", fontSize: "8px", letterSpacing: "0.3px" }}
             >
               {layer.sub}

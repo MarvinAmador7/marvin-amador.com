@@ -29,10 +29,8 @@
   --surface: #0e0e0e;
   --surface-raised: #131313;
   --text: #eeeeea;
-  --muted: #858582;
   --quiet: #5d5d59;
   --line: #292927;
-  --accent: #e56f46;
   --diagram-blue: #7396b8;
   --diagram-blue-dim: rgba(115, 150, 184, 0.12);
   --diagram-green: #75a383;
@@ -94,7 +92,7 @@ body {
 }
 
 ::selection {
-  background: var(--accent);
+  background: var(--primary);
   color: var(--canvas);
 }
 
@@ -111,7 +109,7 @@ select {
 }
 
 a:focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 1px solid var(--primary);
   outline-offset: 5px;
 }
 
@@ -235,9 +233,9 @@ a:focus-visible {
   --color-border: var(--border);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
+  --color-accent: var(--primary);
   --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
+  --color-muted: var(--color-dim);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
