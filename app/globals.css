@@ -302,26 +302,8 @@ a:focus-visible {
   padding: 8px 12px 0;
 }
 
-.opgraph-svg {
-  display: block;
-  height: auto;
-  overflow: visible;
-  width: 100%;
-}
-
-.opgraph-glow {
-  opacity: 0.45;
-  transition: opacity 0.55s ease;
-}
-
 .chapter-visual:hover .opgraph-glow {
   opacity: 0.8;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .opgraph-glow {
-    transition: none;
-  }
 }
 
 .domain-primary,
