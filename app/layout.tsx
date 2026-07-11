@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ReactNode } from "react";
 import "./globals.css";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
@@ -25,7 +26,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={cn(geistSans.variable, geistMono.variable)}>
-      <body>{children}</body>
+      <body>
+        <noscript>
+          {/* Without JS the reveal observer never runs — show everything. */}
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important;filter:none!important;}`}</style>
+        </noscript>
+        {children}
+        <ScrollReveal />
+      </body>
     </html>
   );
 }

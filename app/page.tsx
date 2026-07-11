@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -7,9 +8,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { articles, principles, profile, projects } from "@/lib/content";
 
 const textLinkClasses =
-  "flex items-center gap-[7px] text-dim text-[0.72rem] transition-colors duration-[160ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-text";
+  "flex items-center gap-[7px] text-dim text-[0.72rem] transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text";
 const heroLinkClasses =
-  "flex items-center gap-1.5 text-dim text-[0.76rem] transition-colors duration-[160ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-text";
+  "flex items-center gap-1.5 text-dim text-[0.76rem] transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text";
 
 export default function Home() {
   return (
@@ -20,11 +21,11 @@ export default function Home() {
           <p className="m-0 text-dim text-[0.72rem] uppercase">
             <span
               aria-hidden="true"
-              className="mr-2 inline-block size-[7px] rounded-full bg-[#65b978] shadow-[0_0_0_4px_rgba(101,185,120,0.1)]"
+              className="relative mr-2 inline-block size-[7px] rounded-full bg-[#65b978] shadow-[0_0_0_4px_rgba(101,185,120,0.1)] after:absolute after:inset-0 after:rounded-full after:content-[''] after:[animation:availability-pulse_2.8s_var(--ease-fluid)_infinite]"
             />{" "}
             {profile.availability}
           </p>
-          <div className="mt-[78px] mb-[90px] max-w-[810px] max-[640px]:mt-[60px] max-[640px]:mb-[60px] [animation:reveal_600ms_both]">
+          <div data-reveal className="mt-[78px] mb-[90px] max-w-[810px] max-[640px]:mt-[60px] max-[640px]:mb-[60px]">
             <h1 className="m-0 mb-[38px] font-heading text-[6.5rem] font-medium leading-[0.86] max-[840px]:text-[5rem] max-[640px]:text-[4rem] max-[640px]:mb-[30px]">
               {profile.name}
               <span className="text-primary">.</span>
@@ -34,7 +35,7 @@ export default function Home() {
             </p>
             <p className="m-0 max-w-[680px] leading-[1.75] text-dim">{profile.intro}</p>
           </div>
-          <div className="grid grid-cols-4 min-h-[58px] border-y border-line max-[640px]:grid-cols-3" aria-label="Profile links">
+          <div className="grid grid-cols-5 min-h-[58px] border-y border-line max-[640px]:grid-cols-4" aria-label="Profile links">
             <a href={`mailto:${profile.email}`} className={heroLinkClasses}>
               Email <ArrowUpRight size={14} />
             </a>
@@ -44,6 +45,9 @@ export default function Home() {
             <a href={profile.linkedin} className={heroLinkClasses}>
               LinkedIn <ArrowUpRight size={14} />
             </a>
+            <a href={profile.x} className={heroLinkClasses}>
+              X <ArrowUpRight size={14} />
+            </a>
             <span className="flex items-center justify-end gap-1.5 text-quiet text-[0.72rem] uppercase max-[640px]:hidden">
               {profile.location}
             </span>
@@ -51,7 +55,7 @@ export default function Home() {
         </section>
 
         <section className="border-t border-line pt-[116px] pb-[132px] max-[640px]:pt-[82px] max-[640px]:pb-[94px]" aria-labelledby="selected-work">
-          <div className="grid grid-cols-[58px_minmax(0,1fr)_auto] gap-6 items-start mb-[62px] [animation:reveal_600ms_both] max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
+          <div data-reveal className="grid grid-cols-[58px_minmax(0,1fr)_auto] gap-6 items-start mb-[62px] max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
             <p className="m-0 text-quiet text-[0.7rem] uppercase">01</p>
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Selected work</p>
@@ -74,7 +78,7 @@ export default function Home() {
           className="border-t border-line pt-[116px] pb-[132px] grid grid-cols-[minmax(280px,0.82fr)_minmax(420px,1.18fr)] gap-[82px] max-[640px]:pt-[82px] max-[640px]:pb-[94px] max-[840px]:grid-cols-[minmax(0,1fr)] max-[840px]:gap-[52px]"
           aria-labelledby="technical-writing"
         >
-          <div className="grid grid-cols-[42px_minmax(0,1fr)] m-0 sticky top-[126px] [animation:reveal_600ms_both] max-[840px]:static max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
+          <div data-reveal className="grid grid-cols-[42px_minmax(0,1fr)] m-0 sticky top-[126px] max-[840px]:static max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
             <p className="m-0 text-quiet text-[0.7rem] uppercase">02</p>
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Technical writing</p>
@@ -91,14 +95,14 @@ export default function Home() {
             </Link>
           </div>
           <div className="border-t border-line">
-            {articles.map((article) => (
-              <ArticleCard key={article.slug} article={article} />
+            {articles.map((article, index) => (
+              <ArticleCard key={article.slug} article={article} index={index} />
             ))}
           </div>
         </section>
 
         <section className="border-t border-line pt-[116px] pb-[80px] max-[640px]:pt-[82px] max-[640px]:pb-[94px]" aria-labelledby="principles">
-          <div className="grid grid-cols-[58px_minmax(0,1fr)_auto] gap-6 items-start mb-[62px] [animation:reveal_600ms_both] max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
+          <div data-reveal className="grid grid-cols-[58px_minmax(0,1fr)_auto] gap-6 items-start mb-[62px] max-[640px]:grid-cols-[34px_minmax(0,1fr)] max-[640px]:mb-[44px]">
             <p className="m-0 text-quiet text-[0.7rem] uppercase">03</p>
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Working principles</p>
@@ -110,6 +114,8 @@ export default function Home() {
           <div className="border-t border-line grid grid-cols-2 max-[640px]:grid-cols-1">
             {principles.map((principle, index) => (
               <article
+                data-reveal
+                style={{ "--reveal-delay": `${(index % 2) * 60}ms` } as CSSProperties}
                 className="border-b border-line grid gap-[14px] grid-cols-[38px_1fr] min-h-[190px] pt-7 pr-[34px] pb-7 pl-0 odd:border-r odd:border-line even:pl-[34px] max-[640px]:odd:border-r-0 max-[640px]:even:pl-0 max-[640px]:py-[26px] max-[640px]:pr-0"
                 key={principle.title}
               >

@@ -50,6 +50,7 @@ export type Project = {
       body: string[];
       principle?: string;
       details?: string[];
+      relatedArticle?: { slug: string; label: string };
     }[];
     closing: {
       title: string;
@@ -69,7 +70,13 @@ export type Article = {
     heading: string;
     body: string[];
     code?: string;
+    visual?: "crash" | "run-id" | "delivery" | "contention" | "budget" | "trust";
   }[];
+  references?: {
+    label: string;
+    href: string;
+  }[];
+  heroLogos?: ("pi" | "smithers")[];
 };
 
 export const profile = {
@@ -78,8 +85,9 @@ export const profile = {
   location: "Costa Rica",
   availability: "Open to product engineering and AI infrastructure work",
   email: "hello@example.com",
-  github: "https://github.com/",
-  linkedin: "https://www.linkedin.com/",
+  github: "https://github.com/marvinamador7",
+  linkedin: "https://www.linkedin.com/in/marvinamadorcampos/",
+  x: "https://x.com/marv_amador",
   intro:
     "I design and ship full-stack systems with a bias for durable architecture, clear interfaces, and operational visibility. This portfolio is built to show the work behind the work: project decisions, tradeoffs, and technical writing.",
 };
@@ -231,6 +239,10 @@ export const projects: Project[] = [
             "Per-run tool, turn, runtime, and cost ceilings",
             "Pinned context, append-only tool evidence, and idempotent callbacks",
           ],
+          relatedArticle: {
+            slug: "durable-agentic-workflows-surviving-the-crash-mid-run",
+            label: "Deep dive: how the durable agent harness survives a crash mid-run",
+          },
         },
         {
           kicker: "07 / Field reliability",
@@ -297,6 +309,128 @@ export const projects: Project[] = [
 ];
 
 export const articles: Article[] = [
+  {
+    slug: "durable-agentic-workflows-surviving-the-crash-mid-run",
+    title: "Durable agentic workflows: surviving the crash mid-run",
+    deck:
+      "Agents fail constantly. The interesting engineering in Grivara OPS wasn't the prompts. It was making every agent run resumable, budgeted, and verifiable after any failure.",
+    date: "2026-07-11",
+    readTime: "14 min",
+    tags: ["agents", "durability", "systems"],
+    heroLogos: ["smithers", "pi"],
+    sections: [
+      {
+        heading: "The failure that shaped the architecture",
+        visual: "crash",
+        body: [
+          "Grivara OPS lets an administrator ask an agent to draft an extension package: a proposed set of custom records, relations, and workflows that changes how work orders behave. A draft run makes four or five tool calls, burns real tokens, and takes a couple of minutes. During development I watched one of these die halfway through because the VM restarted. Nothing was wrong with the agent. The infrastructure just did what infrastructure does.",
+          "In most agent stacks that run is simply gone. You retry from zero, pay for the same tool calls twice, and hope the second attempt lands on the same answer. That felt acceptable in a demo and unacceptable in a product where an administrator is waiting on the result.",
+          "So the execution layer was built around one belief: an agent run is a durable workflow, not a request. The stack is small. Pi, an open source coding agent library, does the model-and-tools loop. Smithers, a workflow orchestrator, wraps that loop in checkpointed workflows persisted to Postgres. Both run inside one Bun service deployed as a single always-on machine.",
+          "Every run makes the same trip: the product API records the run and hands the runner an ID, the runner exchanges that ID for credentials and a spending policy, the workflow executes the agent against the product's tools, and a terminal callback reports the result. The rest of this article is about keeping that trip survivable at each step, because most of the interesting decisions are about what happens when something dies.",
+        ],
+      },
+      {
+        heading: "The run ID is the unit of truth",
+        visual: "run-id",
+        body: [
+          "The runner's HTTP surface accepts almost nothing. A run starts when the product API posts an opaque run ID. No prompt, no credentials, no tool config. The runner calls back to the product to exchange that ID for everything else: the request, a short-lived capability token for tool access, and a policy carrying the model, timeout, and spending limits. Secrets arrive just in time, scoped to one run, and are never written anywhere. The token expires in five minutes, and the tool surface it unlocks is read-only: the agent can inspect business objects and run previews, but every durable write happens in the product, after validation.",
+          "The same ID becomes the Smithers workflow ID, which keys every checkpoint in Postgres. That one decision carries most of the durability story. Identity is stable from the user's click to the last checkpoint, so resuming a dead run means starting the workflow again with the same ID and letting Smithers skip everything that already completed.",
+          "Workflows themselves are JSX. The prompt is the task's children, the output contract is a Zod schema, and the agent is a prop. I was skeptical of JSX as a workflow language until I had to read one six weeks later: the tree makes the structure obvious, and binding the schema at the task level means the model's answer is validated before the workflow ever sees it.",
+        ],
+        code: `export default smithers(() => (
+  <Workflow name="package-composer">
+    <Task
+      id="compose-package"
+      agent={piAgent}
+      output={outputs.blueprint}
+      retries={0}
+    >
+      Draft a package blueprint for the pinned work
+      order context. Preview it with the preview tool
+      before returning. Return only JSON matching the
+      blueprint contract.
+    </Task>
+  </Workflow>
+));`,
+      },
+      {
+        heading: "At-least-once execution, exactly-once effect",
+        visual: "delivery",
+        body: [
+          "Resumability is useless if nothing notices the run died. On boot, and every fifteen seconds after, the runner asks the product API for runs that are queued or have gone stale mid-execution, and posts them back to itself.",
+          "This loop is deliberately dumb. It does not track why a run stopped or whether some other process might also retry it. It relies on two properties instead. Re-posting an in-flight run is a no-op: the handler keeps a set of accepted run IDs and answers duplicates without launching anything. And re-running an interrupted run replays from the last checkpoint, so the only work repeated is the terminal callback, which is idempotent on the API side.",
+          "This is also the honest answer to why the design is not a job queue with retries. A queue restarts work from zero: same tokens spent again, same tool calls repeated, possibly a different answer at the end. A checkpointed workflow resumes work where it stopped. For jobs where every step costs real money, that difference is the whole argument.",
+          "The pattern is old: at-least-once delivery with idempotent effects. What surprised me was how much design pressure it removed. Once duplicate delivery is harmless, you stop writing careful code to prevent it.",
+        ],
+        code: `async function recoverInterruptedRuns() {
+  const { runIds } = await api.recoverable({ limit: 4 });
+  for (const runId of runIds) {
+    // Re-posting an active run is a harmless duplicate.
+    await enqueue(runId);
+  }
+}
+
+recoverInterruptedRuns();
+setInterval(recoverInterruptedRuns, 15_000);`,
+      },
+      {
+        heading: "Contention is not failure",
+        visual: "contention",
+        body: [
+          "The recovery loop creates its own race. If a run looks stale because the original worker is slow rather than dead, the retry and the original end up fighting over the same run. Smithers arbitrates ownership with claim codes, and the loser has to know how to lose.",
+          "The failure mode this prevents is quiet and nasty: the losing worker reports the run as failed, the product marks it failed, and moments later the winning worker completes it. The user sees a failure that mutates into a success, or a success overwritten by a failure. Classifying contention as not-yours instead of broken keeps the losing worker silent, while real model errors still propagate to the user.",
+          "The test suite pins this distinction explicitly, because it is exactly the kind of behavior a refactor destroys without anyone noticing until production.",
+        ],
+        code: `const RESUME_CONTENTION = new Set([
+  "RUN_OWNER_ALIVE",
+  "RUN_STILL_RUNNING",
+  "RUN_RESUME_CLAIM_FAILED",
+  "RUN_RESUME_CLAIM_LOST",
+]);
+
+if (isResumeContention(error)) {
+  // Another worker owns this run. Say nothing.
+  throw error;
+}
+await api.failed({ runId, code: classify(error) });`,
+      },
+      {
+        heading: "Budgets are abort conditions, not dashboards",
+        visual: "budget",
+        body: [
+          "A run that can survive any crash can also, in principle, run forever. Durability makes runaway cost easier, not harder, so the limits have to live inside the execution loop. Smithers streams progress events during a run: token usage, completed turns, tool activity. The runner folds them into counters checked on every event.",
+          "When a limit trips, the abort controller kills the run mid-flight and the failure callback tells the product exactly which budget was exceeded. The budgets are small on purpose: a package draft gets six turns and ten cents. If the agent cannot finish inside that, the answer is to fix the task, not raise the ceiling.",
+          "I have seen plenty of cost dashboards for LLM systems. They are useful for finance and useless for control, because by the time a human reads one the money is spent. Enforcement inside the run is the difference between knowing you overspent and not overspending.",
+        ],
+        code: `// Both passed to the workflow run, alongside an AbortController.
+onProgress: (event) => {
+  if (event.type === "TokenUsageReported") {
+    spentUsd += costOf(event.usage);
+  }
+  if (event.type === "turn:completed") {
+    turns += 1;
+  }
+  if (spentUsd > policy.maxCostUsd || turns > policy.maxTurns) {
+    controller.abort(limitCode(spentUsd, turns));
+  }
+},`,
+      },
+      {
+        heading: "Never trust the agent's own report",
+        visual: "trust",
+        body: [
+          "The last boundary is the terminal callback. When a run completes, the runner reports the output, but the product API treats that report as a claim, not a fact. It re-parses the blueprint against the schema, re-runs the preview validation server-side, and enforces the cost ceiling again on its own accounting. The agent is instructed to preview its own work before returning, and it usually does. The system is not built on usually.",
+          "That also closes the loop on the run from the opening section. It resumed from its checkpoint after the restart, finished the remaining tool calls, and the draft it produced was re-validated before any administrator saw it. The total user-visible impact of the crash was that the run took a little longer.",
+          "None of this is free, and it is worth being honest about the bill. The machine stays warm even when idle, because the recovery loop is what notices dead runs. Every workflow step pays a checkpoint write. And the whole design rests on a discipline that a refactor can quietly break: terminal effects must stay idempotent, because the system is allowed to deliver them twice. I consider all three cheap against the alternative, which is explaining to a user why their run vanished.",
+          "None of this is exotic. Checkpointed workflows, idempotent handlers, lease arbitration, and server-side validation are standard distributed-systems furniture. What building this taught me is that agents do not exempt you from any of it. They raise the stakes, because every retry costs real money and every unverified output carries a model's confidence. Prompts got the demo working. Durability made it a product.",
+        ],
+      },
+    ],
+    references: [
+      { label: "Smithers, the durable workflow orchestrator", href: "https://smithers.sh" },
+      { label: "Pi, the coding agent library", href: "https://pi.dev/" },
+    ],
+  },
   {
     slug: "designing-evaluations-that-catch-real-regressions",
     title: "Designing evaluations that catch real regressions",

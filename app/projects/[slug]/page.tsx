@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Mail } from "lucide-react";
+import { ArticleRef } from "@/components/ArticleRef";
 import { CaseStudyDiagram } from "@/components/CaseStudyDiagram";
 import { ProjectVisual } from "@/components/ProjectVisual";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -22,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 const textLinkClass =
-  "mb-[10px] gap-[7px] self-end text-[0.72rem] text-dim transition-colors duration-[160ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-text";
+  "mb-[10px] gap-[7px] self-end text-[0.72rem] text-dim transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -38,20 +40,20 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       <main className="mx-auto min-h-[calc(100vh-88px)] max-w-[1040px] px-7 pb-[112px] max-[640px]:px-5">
         <Link
           href="/projects"
-          className="flex w-fit items-center gap-[7px] pt-[38px] text-[0.72rem] text-dim transition-colors duration-[160ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-text"
+          className="flex w-fit items-center gap-[7px] pt-[38px] text-[0.72rem] text-dim transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text"
         >
           <ArrowLeft size={16} /> Projects
         </Link>
 
         <section className="grid grid-cols-[minmax(0,1fr)_390px] items-end gap-[68px] pt-[90px] pb-[100px] max-[840px]:grid-cols-1 max-[840px]:items-start max-[640px]:gap-[46px] max-[640px]:pt-[68px] max-[640px]:pb-[76px]">
-          <div className="animate-[reveal_600ms_both]">
+          <div data-reveal>
             <p className="m-0 text-[0.7rem] uppercase text-quiet">Project / {project.year}</p>
             <h1 className="mt-6 mb-[30px] font-heading text-[4.35rem] font-medium leading-[0.96] max-[640px]:mt-[22px] max-[640px]:text-[3rem]">
               {project.title}
             </h1>
             <p className="mb-0 text-dim leading-[1.75]">{project.summary}</p>
           </div>
-          <div className="animate-[reveal_600ms_both]">
+          <div data-reveal style={{ "--reveal-delay": "110ms" } as CSSProperties}>
             <ProjectVisual project={project} />
           </div>
         </section>
@@ -91,9 +93,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 </h2>
               </div>
               <div className="grid grid-cols-4 border-t border-b border-line max-[840px]:grid-cols-2 max-[640px]:grid-cols-1">
-                {project.caseStudy.architecture.map((layer) => (
+                {project.caseStudy.architecture.map((layer, layerIndex) => (
                   <article
                     key={layer.label}
+                    data-reveal
+                    style={{ "--reveal-delay": `${layerIndex * 60}ms` } as CSSProperties}
                     className="min-h-[270px] border-r border-line px-[22px] py-6 last:border-r-0 max-[840px]:[&:nth-child(-n+2)]:border-b max-[840px]:[&:nth-child(-n+2)]:border-line max-[840px]:[&:nth-child(2)]:border-r-0 max-[640px]:min-h-0 max-[640px]:border-r-0 max-[640px]:border-b max-[640px]:border-line max-[640px]:px-0 max-[640px]:pt-6 max-[640px]:pb-7 max-[640px]:last:border-b-0"
                   >
                     <p className="m-0 mb-[54px] text-[0.64rem] uppercase text-primary max-[640px]:mb-8">{layer.label}</p>
@@ -109,6 +113,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 {project.caseStudy.chapters.map((chapter) => (
                   <section
                     key={chapter.kicker}
+                    data-reveal
                     className="mb-[132px] scroll-mt-[110px] [content-visibility:auto] [contain-intrinsic-size:auto_1000px] max-[640px]:mb-24"
                   >
                     <p className="m-0 text-[0.7rem] uppercase text-quiet">{chapter.kicker}</p>
@@ -140,6 +145,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                         </span>
                         {chapter.principle}
                       </blockquote>
+                    ) : null}
+                    {chapter.relatedArticle ? (
+                      <div className="mt-9">
+                        <ArticleRef
+                          href={`/articles/${chapter.relatedArticle.slug}`}
+                          label={chapter.relatedArticle.label}
+                        />
+                      </div>
                     ) : null}
                   </section>
                 ))}
@@ -202,7 +215,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 ))}
                 <a
                   href={`mailto:${profile.email}`}
-                  className="mt-7 inline-flex min-h-[44px] items-center gap-[10px] border border-text px-4 text-[0.72rem] transition-colors duration-[160ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:bg-text hover:text-canvas"
+                  className="mt-7 inline-flex min-h-[44px] items-center gap-[10px] border border-text px-4 text-[0.72rem] origin-center transition-[color,background-color,scale] duration-[160ms] ease-[var(--ease-hover)] hover:bg-text hover:text-canvas active:scale-[0.97]"
                 >
                   Discuss an agentic platform <Mail size={16} />
                 </a>

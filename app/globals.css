@@ -22,6 +22,12 @@
   --color-diagram-red-dim: rgba(197, 101, 91, 0.1);
   --font-heading: var(--font-geist-sans), sans-serif;
   --font-ui: var(--font-geist-mono), monospace;
+  /* Strong ease-out for entrances/interactions — the built-in CSS `ease`
+     (0.25,0.1,0.25,1) is too soft to read as intentional. */
+  --ease-fluid: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Soft built-in `ease`, correct for color hovers (starts/ends gently).
+     Deliberately weaker than --ease-fluid — do not use it for movement. */
+  --ease-hover: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 :root {
@@ -162,6 +168,38 @@ a:focus-visible {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Scroll-triggered entrance system, driven by components/ScrollReveal.tsx.
+   Elements start hidden and settle into place with a strong ease-out once they
+   enter the viewport. `--reveal-delay` staggers items within a group. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(3px);
+  transition:
+    opacity 640ms var(--ease-fluid),
+    transform 640ms var(--ease-fluid),
+    filter 640ms var(--ease-fluid);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+@keyframes availability-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(101, 185, 120, 0.3);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(101, 185, 120, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(101, 185, 120, 0);
   }
 }
 
