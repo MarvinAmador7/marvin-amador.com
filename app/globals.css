@@ -115,46 +115,33 @@ a:focus-visible {
   outline-offset: 5px;
 }
 
-.iso-svg {
-  display: block;
-  height: auto;
-  overflow: visible;
-  width: 100%;
-}
-
-.iso-slab {
-  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.15, 1);
-}
-
-.iso-glow {
-  opacity: 0.4;
-  transition: opacity 0.55s ease;
-}
-
-.project-visual--iso:hover .iso-slab[data-layer="0"] {
-  transform: translateY(-10px);
-}
-
-.project-visual--iso:hover .iso-slab[data-layer="1"] {
-  transform: translateY(-6px);
-}
-
-.project-visual--iso:hover .iso-slab[data-layer="2"] {
-  transform: translateY(-3px);
-}
-
-.project-visual--iso:hover .iso-glow {
-  opacity: 0.75;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .iso-slab,
-  .iso-glow {
-    transition: none;
+/* IsometricStack: base .iso-svg/.iso-slab/.iso-glow rules converted to Tailwind
+   utilities in components/IsometricStack.tsx. What remains here is the
+   hover-cascade coupling triggered by the ancestor `.project-visual--iso`
+   class (defined in components/ProjectVisual.tsx, out of scope for this
+   conversion) — it cannot be expressed as a utility on the descendant
+   without modifying that ancestor component. */
+@layer components {
+  .project-visual--iso:hover .iso-slab[data-layer="0"] {
+    transform: translateY(-10px);
   }
 
-  .project-visual--iso:hover .iso-slab {
-    transform: none;
+  .project-visual--iso:hover .iso-slab[data-layer="1"] {
+    transform: translateY(-6px);
+  }
+
+  .project-visual--iso:hover .iso-slab[data-layer="2"] {
+    transform: translateY(-3px);
+  }
+
+  .project-visual--iso:hover .iso-glow {
+    opacity: 0.75;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-visual--iso:hover .iso-slab {
+      transform: none;
+    }
   }
 }
 
