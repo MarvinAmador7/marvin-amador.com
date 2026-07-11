@@ -11,5 +11,13 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 
+# typescript / next auto-generated
+next-env.d.ts
+*.tsbuildinfo
+
 # Superpowers SDD scratch
 .superpowers/
+
+# Migration verification screenshots (only before-* baselines are kept)
+docs/superpowers/plans/screenshots/after-*.png
+docs/superpowers/plans/screenshots/final-*.png
