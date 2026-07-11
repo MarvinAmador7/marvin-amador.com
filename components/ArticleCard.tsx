@@ -18,7 +18,7 @@ export function ArticleCard({ article }: { article: Article }) {
           <p className="m-0 leading-[1.65] text-dim">{article.deck}</p>
         </div>
         <ArrowRight
-          className="text-quiet transition-[color,transform] duration-[180ms] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-primary"
+          className="text-quiet transition-[color,transform] duration-[180ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] group-hover:text-primary"
           size={18}
           aria-hidden="true"
         />

@@ -10,7 +10,7 @@ export function SiteHeader() {
         aria-label={`${profile.name} home`}
       >
         <span
-          className="inline-flex size-7 items-center justify-center border border-text transition-[background-color,color,transform] duration-[180ms] group-hover:bg-text group-hover:text-canvas group-hover:-rotate-[7deg]"
+          className="inline-flex size-7 items-center justify-center border border-text transition-[background-color,color,transform] duration-[180ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:bg-text group-hover:text-canvas group-hover:-rotate-[7deg]"
           aria-hidden="true"
         >
           M
@@ -26,7 +26,7 @@ export function SiteHeader() {
           <Link
             key={item.label}
             href={item.href}
-            className="text-dim text-[0.76rem] transition-colors hover:text-text max-sm:text-[0.66rem]"
+            className="text-dim text-[0.76rem] transition-colors duration-[160ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:text-text max-sm:text-[0.66rem]"
           >
             {item.label}
           </Link>
