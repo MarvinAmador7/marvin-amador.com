@@ -672,15 +672,15 @@ function OfflineReplay() {
           <span>Cold restart while offline</span>
         </div>
         <div className="grid grid-cols-3 gap-1.5 max-[640px]:grid-cols-1">
-          <div className="flex min-h-[35px] items-center gap-[7px] border border-line p-1.5 text-[0.48rem] text-dim">
+          <div className="flex min-h-[35px] items-center gap-[7px] border border-line p-1.5 text-[0.48rem]">
             <b className="text-[0.5rem] font-medium text-primary">1</b>
             <span>Hydrate visible cache</span>
           </div>
-          <div className="flex min-h-[35px] items-center gap-[7px] border border-line p-1.5 text-[0.48rem] text-dim">
+          <div className="flex min-h-[35px] items-center gap-[7px] border border-line p-1.5 text-[0.48rem]">
             <b className="text-[0.5rem] font-medium text-primary">2</b>
             <span>Register mutation functions</span>
           </div>
-          <div className="flex min-h-[35px] items-center gap-[7px] border border-line p-1.5 text-[0.48rem] text-dim">
+          <div className="flex min-h-[35px] items-center gap-[7px] border border-line p-1.5 text-[0.48rem]">
             <b className="text-[0.5rem] font-medium text-primary">3</b>
             <span>Hydrate paused mutations</span>
           </div>
