@@ -320,13 +320,13 @@ export const articles: Article[] = [
     heroLogos: ["smithers", "pi"],
     sections: [
       {
-        heading: "The failure that shaped the architecture",
+        heading: "An agent run is a durable workflow, not a request",
         visual: "crash",
         body: [
-          "Grivara OPS lets an administrator ask an agent to draft an extension package: a proposed set of custom records, relations, and workflows that changes how work orders behave. A draft run makes four or five tool calls, burns real tokens, and takes a couple of minutes. During development I watched one of these die halfway through because the VM restarted. Nothing was wrong with the agent. The infrastructure just did what infrastructure does.",
-          "In most agent stacks that run is simply gone. You retry from zero, pay for the same tool calls twice, and hope the second attempt lands on the same answer. That felt acceptable in a demo and unacceptable in a product where an administrator is waiting on the result.",
-          "So the execution layer was built around one belief: an agent run is a durable workflow, not a request. The stack is small. Pi, an open source coding agent library, does the model-and-tools loop. Smithers, a workflow orchestrator, wraps that loop in checkpointed workflows persisted to Postgres. Both run inside one Bun service deployed as a single always-on machine.",
-          "Every run makes the same trip: the product API records the run and hands the runner an ID, the runner exchanges that ID for credentials and a spending policy, the workflow executes the agent against the product's tools, and a terminal callback reports the result. The rest of this article is about keeping that trip survivable at each step, because most of the interesting decisions are about what happens when something dies.",
+          "In Grivara OPS, an administrator can ask an agent to draft an extension package: a proposed set of custom records, relations, and workflows that changes how work orders behave. A single draft makes four or five tool calls and takes a couple of minutes. During development, one of these runs was interrupted partway through when its VM restarted.",
+          "By default, an interrupted run is lost. The system starts over from the first tool call, spends the tokens again, and can return a different result the second time. That is acceptable in a demo. It is not acceptable in a product where someone is waiting on the output and every attempt costs money.",
+          "So the execution layer treats each run as a durable workflow. The stack is small. Pi, an open source coding agent library, runs the model-and-tools loop. Smithers, a workflow orchestrator, wraps that loop in checkpointed workflows persisted to Postgres. Both run inside one Bun service on a single always-on machine.",
+          "Every run makes the same trip: the product API records the run and hands the runner an ID, the runner exchanges that ID for credentials and a spending policy, the workflow executes the agent against the product's tools, and a terminal callback reports the result. The rest of this article covers how each step survives an interruption, which is where most of the design work went.",
         ],
       },
       {
