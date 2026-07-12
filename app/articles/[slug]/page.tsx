@@ -81,7 +81,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
               </h2>
               {section.visual ? <ArticleDiagram kind={section.visual} /> : null}
               {section.body.map((paragraph) => (
-                <p key={paragraph} className="font-ui text-[0.94rem] leading-[1.9] text-[#aaa9a4]">
+                <p key={paragraph} className="mb-6 font-ui text-[0.94rem] leading-[1.9] text-[#aaa9a4] last:mb-0">
                   {paragraph}
                 </p>
               ))}
