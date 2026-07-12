@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -57,7 +56,7 @@ export function ArticleLayout({
             </div>
           </header>
 
-          <div data-reveal className="article-body pt-[68px]" style={{ "--reveal-delay": "60ms" } as CSSProperties}>
+          <div className="article-body pt-[68px]">
             {children}
           </div>
 

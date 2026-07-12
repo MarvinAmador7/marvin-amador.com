@@ -5,6 +5,7 @@ import { ArticleRef } from "@/components/ArticleRef";
 export const mdxComponents: MDXComponents = {
   h2: (props) => (
     <h2
+      data-reveal
       className="mt-[68px] mb-6 font-heading text-[2.1rem] font-medium leading-[1.12] max-[640px]:text-[1.75rem]"
       {...props}
     />
@@ -24,6 +25,7 @@ export const mdxComponents: MDXComponents = {
   ),
   blockquote: (props) => (
     <blockquote
+      data-reveal
       className="my-9 border-l-2 border-primary pl-[26px] font-heading text-[1.5rem] font-medium leading-[1.3] text-text max-[640px]:pl-5 max-[640px]:text-[1.25rem]"
       {...props}
     />
@@ -33,10 +35,15 @@ export const mdxComponents: MDXComponents = {
   ),
   pre: (props) => (
     <pre
+      data-reveal
       className="mb-6 mt-[30px] overflow-x-auto border border-line bg-surface-raised p-6 font-ui text-[0.78rem] leading-[1.75] text-[#d7d7d1]"
       {...props}
     />
   ),
-  Diagram: ({ kind }: { kind: ArticleDiagramKind }) => <ArticleDiagram kind={kind} />,
+  Diagram: ({ kind }: { kind: ArticleDiagramKind }) => (
+    <div data-reveal>
+      <ArticleDiagram kind={kind} />
+    </div>
+  ),
   ArticleRef,
 };
