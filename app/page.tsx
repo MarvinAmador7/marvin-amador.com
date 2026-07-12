@@ -5,7 +5,8 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { articles, principles, profile, projects } from "@/lib/content";
+import { getAllArticleMeta } from "@/lib/articles";
+import { principles, profile, projects } from "@/lib/content";
 
 const textLinkClasses =
   "flex items-center gap-[7px] text-dim text-[0.72rem] transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text";
@@ -13,6 +14,7 @@ const heroLinkClasses =
   "flex items-center gap-1.5 text-dim text-[0.76rem] transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text";
 
 export default function Home() {
+  const articles = getAllArticleMeta();
   return (
     <>
       <SiteHeader />

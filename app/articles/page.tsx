@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { articles } from "@/lib/content";
+import { getAllArticleMeta } from "@/lib/articles";
 
 export const metadata = {
   title: "Articles | Marvin",
@@ -10,6 +10,7 @@ export const metadata = {
 };
 
 export default function ArticlesPage() {
+  const articles = getAllArticleMeta();
   return (
     <>
       <SiteHeader />

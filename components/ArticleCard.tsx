@@ -1,9 +1,9 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Article } from "@/lib/content";
+import type { ArticleMeta } from "@/lib/articles";
 
-export function ArticleCard({ article, index = 0 }: { article: Article; index?: number }) {
+export function ArticleCard({ article, index = 0 }: { article: ArticleMeta; index?: number }) {
   return (
     <article
       data-reveal
