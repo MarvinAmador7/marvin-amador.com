@@ -84,7 +84,7 @@ export const profile = {
   role: "Software engineer building reliable product systems",
   location: "Costa Rica",
   availability: "Open to product engineering and AI infrastructure work",
-  email: "hello@example.com",
+  email: "marvin.ac.cr@gmail.com",
   github: "https://github.com/marvinamador7",
   linkedin: "https://www.linkedin.com/in/marvinamadorcampos/",
   x: "https://x.com/marv_amador",
