@@ -1,0 +1,39 @@
+---
+title: "Event-sourced workflows without the ceremony"
+deck: "A practical approach to workflow history, replay, and auditability for product teams that do not need a full platform rewrite."
+date: "2026-05-27"
+readTime: "11 min"
+tags: ["architecture", "backend", "databases"]
+---
+
+## Use events to explain decisions
+
+The strongest argument for event history is not theoretical purity. It is the ability to answer why the system did something after a customer or operator asks.
+
+For billing, provisioning, and compliance workflows, a compact event stream can make the difference between a guess and a defensible explanation.
+
+## Persist the facts, derive the views
+
+A workflow table can store the current state for fast reads, while an append-only event table stores every transition. The state is an optimization; the events are the record.
+
+This lets you rebuild views, inspect edge cases, and add new reporting without changing the core product flow.
+
+```ts
+await db.transaction(async (tx) => {
+  await tx.workflowEvents.insert({
+    workflowId,
+    type: "invoice.previewed",
+    payload: preview,
+  });
+
+  await tx.workflows.update(workflowId, {
+    status: "waiting_for_approval",
+  });
+});
+```
+
+## Avoid making every object an event store
+
+Event sourcing is a tool for places where history is product behavior. Applying it everywhere adds operational drag and cognitive overhead.
+
+The pragmatic line is simple: if the business will ask why, when, and from which inputs, keep the event.

@@ -1,0 +1,35 @@
+---
+title: "Designing evaluations that catch real regressions"
+deck: "How I structure AI product evaluations around observable failure modes instead of abstract benchmark scores."
+date: "2026-06-18"
+readTime: "9 min"
+tags: ["AI quality", "testing", "systems"]
+---
+
+## Start from the failure budget
+
+A useful evaluation suite begins with the ways the product is allowed to fail. For a support assistant, a missed citation may be tolerable in a draft response, while a fabricated refund policy is a release blocker.
+
+I group cases by product promise, failure severity, and the system boundary that can realistically fix the issue. That keeps the suite small enough to run often while still being specific enough to guide engineering work.
+
+## Make regressions diffable
+
+The most important output is not a single score. It is a reviewable diff that shows which examples changed, which rubric dimension moved, and whether the source context supports the answer.
+
+That changes the team conversation from whether the model feels better to whether the release improves the product contract.
+
+```ts
+type EvaluationResult = {
+  caseId: string;
+  answerScore: number;
+  citationCoverage: number;
+  changedFromBaseline: boolean;
+  reviewerNote?: string;
+};
+```
+
+## Keep humans in the loop where judgment matters
+
+Automated checks are excellent for structure, citations, latency, and obvious contradictions. Human review is still better for tone, prioritization, and whether an answer resolves the actual user intent.
+
+The right system separates those concerns so reviewers spend time on judgment rather than re-checking mechanical constraints.
