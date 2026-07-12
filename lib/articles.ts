@@ -8,7 +8,9 @@ const ARTICLES_DIR = path.join(process.cwd(), "content/articles");
 export const articleFrontmatterSchema = z.object({
   title: z.string(),
   deck: z.string(),
-  date: z.string(),
+  // Must be a quoted YYYY-MM-DD string. Unquoted YAML dates parse to a Date
+  // object (not a string) and fail here, which is the intended guard.
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "date must be a quoted YYYY-MM-DD string"),
   readTime: z.string(),
   tags: z.array(z.string()),
   heroLogos: z.array(z.enum(["pi", "smithers"])).optional(),
@@ -40,7 +42,7 @@ export function getAllArticleMeta(): ArticleMeta[] {
   return getArticleSlugs()
     .map(getArticleMeta)
     .filter((meta) => !meta.draft)
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 
 export function getArticleSource(slug: string): string {
