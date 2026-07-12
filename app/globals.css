@@ -304,3 +304,21 @@ a:focus-visible {
     @apply bg-canvas;
   }
 }
+
+.article-body {
+  counter-reset: article-section;
+}
+.article-body h2 {
+  position: relative;
+}
+.article-body h2::before {
+  counter-increment: article-section;
+  content: counter(article-section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 14px;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--quiet);
+}
