@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </noscript>
         {children}
         <ScrollReveal />
+        <Analytics />
       </body>
     </html>
   );
