@@ -1,0 +1,101 @@
+---
+title: "Scoring a funnel-building agent: the judge gets outvoted"
+deck: "FunnelLoops has an agent that turns chat prompts into funnel JSON. Measuring whether it does that correctly took three scoring layers, a dataset that outlives each fix, and an LLM judge that is deliberately the least trusted voice in the room."
+date: "2026-07-13"
+readTime: "13 min"
+tags: ["evals", "agents", "llm-as-judge"]
+references:
+  - { label: "LangWatch, the LLM evaluation platform", href: "https://langwatch.ai" }
+  - { label: "Vercel AI Gateway", href: "https://vercel.com/docs/ai-gateway" }
+  - { label: "Daytona, sandboxed runtimes for agents", href: "https://www.daytona.io" }
+---
+
+## A funnel spec is a verifiable artifact
+
+In FunnelLoops, a user describes a funnel in chat and an agent builds it. The runtime is Claude Code running inside a Daytona sandbox, one sandbox per conversation, routed through Vercel AI Gateway so the underlying model is a config value rather than a commitment. The runs in this article were testing GLM-4.7. The agent's deliverable is a single file, funnel.json: the steps, the form fields, and the routing graph that the canvas renders and the host persists.
+
+That deliverable is what makes this system easier to evaluate than most agent products. The output is not prose, it is a structured artifact with a schema, a graph, and a stated intent behind it. "Did the agent do a good job" decomposes into questions with real answers: does the spec parse, does the graph hold together, did it include the select field the user explicitly asked for, is the copy sensible for a dental clinic.
+
+The demo looked great, which is exactly the problem. A demo is one sample from a distribution, drawn at whatever temperature the day had. I was about to start changing prompts, editing the agent's skill files, and swapping models through the gateway, and I had no way to know whether any given change made the agent better or just different. So before touching any of that, I built the harness: a dataset of realistic funnel prompts spanning lead capture, booking, qualification, conditional routing, split tests, and multi-path funnels. Each case runs end-to-end against the live server in a fresh sandbox, gets scored three ways, and every score lands in LangWatch as a row in a named experiment.
+
+## Three layers, ordered by trust
+
+Each produced spec passes through three layers, and the ordering is the strategy: most deterministic first, most impressionable last.
+
+Layer one is structural validity. The spec must parse against the same Zod schema and pass the same graph validator the host runs before persisting anything: terminals exist, no orphan steps, no cycles, split-test weights sum to 100, conditional routing has a fallback. Reusing the production validators instead of writing eval-only ones means the eval cannot drift into approving specs the product would reject. If this layer fails, nothing downstream matters, because the artifact is unshippable.
+
+Layer two is per-prompt assertions. Each dataset case carries a list of structural properties that this specific prompt makes non-negotiable:
+
+```ts
+{
+  id: "lead-capture-b2b-saas",
+  prompt: "Build me a lead capture funnel for my B2B SaaS.
+    Landing page, then a contact form (work email, full
+    name, company), then a thank-you page.",
+  assertions: [
+    { type: "min_steps", value: 3 },
+    { type: "max_steps", value: 4 },
+    { type: "has_step_type", value: "landing" },
+    { type: "has_field_type", value: "email" },
+    { type: "has_field_name_like", value: "company" },
+    { type: "has_routing_type", value: "linear" },
+  ],
+}
+```
+
+Notice what is missing: an expected JSON blob. There are many valid shapes for "build a lead capture funnel", and pinning one golden output turns the suite into a game of matching the reference instead of satisfying the user. Properties are the right altitude. The user said "work email, full name, company", so a funnel without a company field is wrong no matter how elegant it is otherwise.
+
+Layer three is the LLM judge: a model reads the original prompt, a human-written intent summary, and the produced spec, then returns a score from 0 to 1 with reasoning, at temperature zero, against a rubric with anchored score levels. It answers the question the first two layers cannot: is this a sensible interpretation of what the person meant.
+
+A case passes only when all three agree:
+
+```ts
+const overall_passed =
+  structural_valid &&
+  assertions.passed === assertions.total &&
+  judge.score >= 0.7;
+```
+
+## The judge grades the story, not the artifact
+
+The layering earned its keep in the first baseline run. One prompt asked for a long qualification funnel where company size is collected "as a select". The agent produced a funnel the judge loved. Score 1.0, reasoning: "The spec implements the requested six-step linear qualification funnel exactly." The deterministic layer disagreed: zero fields of type select in the entire spec. The agent had silently substituted another field type, and the judge, reading a 200-line JSON blob, never noticed.
+
+> The judge grades the story. The assertions grade the artifact.
+
+If the judge were the only scorer, that substitution ships, and it keeps shipping through every future run, because a judge that misses a detail once will miss it consistently. This is the case against the popular one-liner eval stack where a single LLM call decides pass or fail. Judges are genuinely good at what the deterministic layers cannot see: hallucinated extra steps, copy that reads wrong for the stated industry, step ordering that makes no sense. They are unreliable at exhaustive detail checking, which happens to be what schemas and assertions do perfectly and for free.
+
+The judge is also a system component with its own failure modes, and the harness treats it that way. When the judge returns malformed JSON, the case scores zero rather than getting quietly skipped. During one regression run the judge API ran out of credits mid-suite and the affected case failed loudly with the 402 in its reasoning field. That is the correct behavior. An eval harness that scores its own infrastructure failures as passes is lying to you in the direction you most want to be lied to.
+
+## Hallucinations you have to go hunting for
+
+Some failures never show up in a polite dataset. The agent was occasionally inventing step types: asked for a course enrollment funnel, it once emitted a step with type "certification-path", a type that exists nowhere except in that moment's imagination. The canvas renders exactly six step types. Anything else is a runtime error wearing a plausible name.
+
+That produced two additions. First, a universal assertion appended to every case regardless of what the prompt asked for: every step type must be in the canvas-renderable set. Prompt-specific assertions encode what the user requested; universal ones encode what the platform can survive.
+
+Second, a standalone probe script whose prompts are engineered temptation. Each one names a concept the agent might be tempted to turn into a literal type: "a checkout step that collects card info", "an intake step for a clinic", "a payment step", "a scheduling step". The probe is not part of the pass-rate suite. It is a hunting tool, and anything it catches gets promoted into the dataset as a regression case. The same rule applies to production: when a real user's prompt breaks the agent, that exact prompt becomes a dataset row.
+
+## One experiment per hypothesis
+
+The mechanics of the iteration loop matter as much as the scoring. Every run ships to LangWatch under an experiment name, and I treat that name like a branch name: one hypothesis, one experiment.
+
+The baseline run scored 10 of 12, with a judge average of 0.89. Two failures: one spec that failed Zod outright on a multi-path funnel, and the select substitution. Fixing them looked like this: filter the suite down to the failing case, give each attempted fix its own experiment name, and rerun just that case in about a minute instead of the full suite in twenty.
+
+```bash
+EVALS_FILTER=long-qualification \
+EVALS_EXPERIMENT_NAME=fix-select-substitution-v2 \
+pnpm --filter @funnelloops/ai-next eval
+```
+
+The part most eval writeups skip: a fix that passes once is not a fix. Agents are nondeterministic, so after a candidate fix passed, I reran the same case five times under names like fix-select-final-1 through 5. It passed four of five. Four of five is not fixed, it is better, and knowing which of those you have is the entire point of running the same case more than once. After another skill edit, the full suite went 12 of 12 with the judge average at 0.96.
+
+Then came the payoff run. The next day I added two new step types, link and video, extended the dataset to 14 cases, and ran the suite. It collapsed to 6 of 14. Half the cases produced no funnel.json at all; the changes had broken the agent so thoroughly that it often finished a conversation without writing the artifact. No demo would have surfaced that cleanly, because a demo tests the prompt you thought to type. The suite put a number on the damage within minutes of the change, and a week of field-type fidelity work later, the same 14 cases passed 14 of 14 with a judge average of 0.98.
+
+That sequence, 10/12 to 12/12 to 6/14 to 14/14, is the honest shape of agent development. The third number is the one that justifies the stack. Improvement you can see in a demo; regression you need instruments for.
+
+## The dataset outlives the code
+
+The last strategic choice is where things live. The dataset's source of truth is on the LangWatch platform, not in the repo. The runner fetches it at startup and falls back to an inline copy when offline, so anyone can add a case in the platform UI, no code change or deploy, and the next run picks it up. The judge rubric works the same way: a saved evaluator on the platform, editable in the UI, with a local AI Gateway judge as the self-contained fallback. Both backends return the same verdict shape, so the runner does not care which one scored a given run.
+
+Everything also lands on disk. Each run writes a full per-case JSON archive: every assertion failure, every structural error, the judge's complete reasoning. The iteration story in this article was reconstructed entirely from those files months later, which is its own argument for writing them.
+
+None of this stack is clever, and that is a feature. A Zod schema, a list of property checks, one LLM call with a rubric, and a naming convention. It cost about a day to build, and it converted every subsequent change from a vibe into a measurement. The strategy fits in a paragraph: score deterministically first and let the judge break ties above that line, assert properties instead of golden outputs, give every hypothesis its own named experiment, rerun anything nondeterministic before calling it fixed, and treat every production failure as a dataset row waiting to be added. The agent got the demo working. The evals are what made it safe to keep changing.
