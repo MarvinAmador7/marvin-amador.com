@@ -162,15 +162,12 @@ function AudienceLens({ value }: { value: AudienceInsights }) {
       aria-label="Audience interpretation"
     >
       <div className="min-h-[130px] p-[17px] max-[640px]:min-h-0">
-        <span className="mb-3 block text-[0.6rem] uppercase text-primary">CEO</span>
         <p className="m-0 text-[0.62rem] leading-[1.65] text-dim">{value.ceo}</p>
       </div>
       <div className="min-h-[130px] p-[17px] max-[640px]:min-h-0">
-        <span className="mb-3 block text-[0.6rem] uppercase text-primary">CTO</span>
         <p className="m-0 text-[0.62rem] leading-[1.65] text-dim">{value.cto}</p>
       </div>
       <div className="min-h-[130px] p-[17px] max-[640px]:min-h-0">
-        <span className="mb-3 block text-[0.6rem] uppercase text-primary">Engineering</span>
         <p className="m-0 text-[0.62rem] leading-[1.65] text-dim">{value.engineering}</p>
       </div>
     </div>
