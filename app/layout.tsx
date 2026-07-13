@@ -19,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Marvin | Software Portfolio",
+  title: "Marvin | AI Agentic Systems Engineer",
   description:
-    "Technical portfolio for Marvin: selected projects, engineering notes, and deep technical articles.",
+    "I design and build AI-native products and agentic systems: governed agent runtimes, durable workflows, and the product around them. Two full case studies, decision by decision.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

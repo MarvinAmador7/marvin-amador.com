@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Mail } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -36,6 +36,12 @@ export default function Home() {
               {profile.role}.
             </p>
             <p className="m-0 max-w-[680px] leading-[1.75] text-dim">{profile.intro}</p>
+            <a
+              href={`mailto:${profile.email}?subject=${encodeURIComponent("Agentic product project")}`}
+              className="mt-9 inline-flex min-h-[44px] items-center gap-[10px] border border-text px-4 text-[0.72rem] origin-center transition-[color,background-color,scale] duration-[160ms] ease-[var(--ease-hover)] hover:bg-text hover:text-canvas active:scale-[0.97]"
+            >
+              {profile.heroCta} <Mail size={16} />
+            </a>
           </div>
           <div className="grid grid-cols-5 min-h-[58px] border-y border-line max-[640px]:grid-cols-4" aria-label="Profile links">
             <a href={`mailto:${profile.email}`} className={heroLinkClasses}>
@@ -62,7 +68,7 @@ export default function Home() {
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Selected work</p>
               <h2 id="selected-work" className="m-0 max-w-[650px] font-heading text-[2.55rem] font-medium leading-[1.08] max-[640px]:text-[2.05rem]">
-                Systems built for the real world.
+                Agentic platforms, built decision by decision.
               </h2>
             </div>
             <Link href="/projects" className={`${textLinkClasses} self-end max-[640px]:col-start-2 max-[640px]:mt-4 max-[640px]:w-fit`}>
@@ -85,11 +91,11 @@ export default function Home() {
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Technical writing</p>
               <h2 id="technical-writing" className="m-0 max-w-[650px] font-heading text-[2.55rem] font-medium leading-[1.08] max-[640px]:text-[2.05rem]">
-                Notes on making software hold up.
+                Notes from building with agents.
               </h2>
               <p className="mt-6 max-w-[560px] leading-[1.7] text-dim">
-                Long-form writing about architecture, AI systems, product decisions,
-                and the lessons that only appear after shipping.
+                Long-form writing about agent architecture, durable workflows,
+                evals, and the lessons that only appear after shipping.
               </p>
             </div>
             <Link href="/articles" className={`${textLinkClasses} self-end col-start-2 mt-7 w-fit max-[640px]:mt-4`}>
@@ -109,7 +115,7 @@ export default function Home() {
             <div>
               <p className="m-0 mb-[15px] text-primary text-[0.7rem] uppercase">Working principles</p>
               <h2 id="principles" className="m-0 max-w-[650px] font-heading text-[2.55rem] font-medium leading-[1.08] max-[640px]:text-[2.05rem]">
-                How I approach the work.
+                How I work.
               </h2>
             </div>
           </div>

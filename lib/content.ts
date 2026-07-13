@@ -92,15 +92,16 @@ export const stackLinks: Record<string, string> = {
 
 export const profile = {
   name: "Marvin",
-  role: "Software engineer building reliable product systems",
+  role: "I build agentic systems that do real work without losing control",
   location: "Costa Rica",
-  availability: "Open to product engineering and AI infrastructure work",
+  availability: "Available to design and build new agentic products",
   email: "marvin.ac.cr@gmail.com",
   github: "https://github.com/marvinamador7",
   linkedin: "https://www.linkedin.com/in/marvinamadorcampos/",
   x: "https://x.com/marv_amador",
   intro:
-    "I design and ship full-stack systems with a bias for durable architecture, clear interfaces, and operational visibility. This portfolio is built to show the work behind the work: project decisions, tradeoffs, and technical writing.",
+    "If you're building an AI-native product or a new agentic business, this is the work I do end to end: the data model that becomes the source of truth, the boundaries that make agents safe to trust, and the product people actually use. The case studies below show how, decision by decision.",
+  heroCta: "Discuss your agentic product",
 };
 
 export const projects: Project[] = [
@@ -454,24 +455,24 @@ export const projects: Project[] = [
 
 export const principles = [
   {
-    title: "Traceable decisions",
-    body: "Technical choices should leave a trail: constraints, alternatives, and the reason a path won.",
+    title: "Your problem first, my stack second",
+    body: "Before writing code I get inside the actual operation: where time dies, where money leaks, what a win looks like in numbers. The architecture follows from that, not the other way around.",
     icon: Braces,
   },
   {
-    title: "Interfaces over glue",
-    body: "I prefer clear boundaries between systems, typed contracts, and explicit ownership over clever integration code.",
+    title: "Working software, early",
+    body: "You see something real running in the first weeks, then we iterate on what actual usage teaches. Roadmaps and decks don't survive contact with the operation. Deployed software does.",
     icon: Boxes,
   },
   {
-    title: "Operational empathy",
-    body: "A feature is not done until the team can observe it, debug it, migrate it, and explain it.",
-    icon: ShieldCheck,
+    title: "No AI theater",
+    body: "If a deterministic rule beats a model, you get the rule. Agents earn autonomy in small, reversible steps behind validation and audit. You're paying for outcomes, not for a demo.",
+    icon: Database,
   },
   {
-    title: "Data that earns trust",
-    body: "Metrics and AI outputs need provenance, review paths, and failure modes that are visible to humans.",
-    icon: Database,
+    title: "Built to hand over",
+    body: "A feature is done when your team can run it without me: observable, debuggable, documented. I measure success by what keeps working after I leave.",
+    icon: ShieldCheck,
   },
 ];
 
