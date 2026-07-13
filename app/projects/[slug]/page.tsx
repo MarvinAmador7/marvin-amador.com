@@ -7,7 +7,7 @@ import { CaseStudyDiagram } from "@/components/CaseStudyDiagram";
 import { ProjectVisual } from "@/components/ProjectVisual";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { profile, projects } from "@/lib/content";
+import { profile, projects, stackLinks } from "@/lib/content";
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -25,6 +25,25 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 const textLinkClass =
   "mb-[10px] gap-[7px] self-end text-[0.72rem] text-dim transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text";
+
+const stackItemClass = "text-[0.68rem] text-quiet before:mr-1.5 before:text-primary before:content-['+']";
+
+function StackItem({ item }: { item: string }) {
+  const href = stackLinks[item];
+  if (!href) {
+    return <span className={stackItemClass}>{item}</span>;
+  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`${stackItemClass} transition-colors duration-[160ms] ease-[var(--ease-hover)] hover:text-text`}
+    >
+      {item}
+    </a>
+  );
+}
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -163,12 +182,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   <h3 className="m-0 mb-4 text-[0.72rem] font-medium uppercase leading-[1.4]">Stack</h3>
                   <div className="flex flex-col items-start gap-[9px]">
                     {project.stack.map((item) => (
-                      <span
-                        key={item}
-                        className="text-[0.68rem] text-quiet before:mr-1.5 before:text-primary before:content-['+']"
-                      >
-                        {item}
-                      </span>
+                      <StackItem key={item} item={item} />
                     ))}
                   </div>
                 </div>
@@ -217,7 +231,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   href={`mailto:${profile.email}`}
                   className="mt-7 inline-flex min-h-[44px] items-center gap-[10px] border border-text px-4 text-[0.72rem] origin-center transition-[color,background-color,scale] duration-[160ms] ease-[var(--ease-hover)] hover:bg-text hover:text-canvas active:scale-[0.97]"
                 >
-                  Discuss an agentic platform <Mail size={16} />
+                  {project.caseStudy.closing.cta} <Mail size={16} />
                 </a>
               </div>
             </section>
@@ -258,12 +272,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 <h3 className="m-0 mb-4 text-[0.72rem] font-medium uppercase leading-[1.4]">Stack</h3>
                 <div className="flex flex-col items-start gap-[9px]">
                   {project.stack.map((item) => (
-                    <span
-                      key={item}
-                      className="text-[0.68rem] text-quiet before:mr-1.5 before:text-primary before:content-['+']"
-                    >
-                      {item}
-                    </span>
+                    <StackItem key={item} item={item} />
                   ))}
                 </div>
               </div>

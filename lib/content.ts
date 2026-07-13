@@ -5,7 +5,6 @@ import {
   Cpu,
   Database,
   Filter,
-  GitBranch,
   Network,
   ShieldCheck,
   TerminalSquare,
@@ -64,8 +63,31 @@ export type Project = {
     closing: {
       title: string;
       body: string[];
+      cta: string;
     };
   };
+};
+
+// Official site per stack label; items without an entry render as plain text.
+// Composite labels ("X + Y") link to the primary product.
+export const stackLinks: Record<string, string> = {
+  "TanStack Start": "https://tanstack.com/start",
+  TypeScript: "https://www.typescriptlang.org",
+  ORPC: "https://orpc.unnoq.com",
+  "PostgreSQL + PostGIS": "https://postgis.net",
+  Drizzle: "https://orm.drizzle.team",
+  "Better Auth": "https://www.better-auth.com",
+  "Trigger.dev": "https://trigger.dev",
+  Expo: "https://expo.dev",
+  "Smithers + Pi": "https://smithers.sh",
+  "Next.js 16": "https://nextjs.org",
+  Convex: "https://www.convex.dev",
+  "Rivet agentOS + Pi": "https://rivet.dev/agent-os/",
+  "Vercel AI Gateway": "https://vercel.com/ai-gateway",
+  Zod: "https://zod.dev",
+  Tinybird: "https://www.tinybird.co",
+  "Better Auth + Polar": "https://www.better-auth.com",
+  "React Flow": "https://reactflow.dev",
 };
 
 export const profile = {
@@ -253,6 +275,7 @@ export const projects: Project[] = [
           "That sequence was deliberate. I did not add governance after an agent demo became dangerous. I designed the truth, permissions, durability, simulation, and audit surfaces first, then gave models the smallest useful window into them. It is slower than building a chatbot and calling it a platform. It is also how you build an agentic system that can earn more autonomy over time.",
           "This is the kind of work I want to keep doing: finding the small set of architectural decisions that let a complex product move quickly without losing control, then carrying those decisions all the way from database invariants to the interface in a technician's hand.",
         ],
+        cta: "Discuss an agentic platform",
       },
     },
   },
@@ -414,10 +437,6 @@ export const projects: Project[] = [
             "The tests I care most about are the ones over the skill files themselves. When product knowledge is prose, prose becomes an interface, and an interface needs tests: frontmatter shape, index consistency, and referenced commands. A skill edit that would confuse the agent fails in CI before it ever reaches one.",
           ],
           principle: "If users will ask in natural language, benchmark in natural language.",
-          relatedArticle: {
-            slug: "designing-evaluations-that-catch-real-regressions",
-            label: "Related: designing evaluations that catch real regressions",
-          },
         },
       ],
       closing: {
@@ -427,48 +446,9 @@ export const projects: Project[] = [
           "The sequence was deliberate. The spec, the validator, and the persistence gateway came first; only then did the agent get its filesystem, its jq, and its skills. That ordering is what makes the system safe to grow. New capability is a new markdown skill, and it arrives without weakening anything, because validation and the gateway do not move.",
           "This is the kind of work I want to keep doing: finding the representation that makes a hard product tractable, then building the boundaries that let humans, runtimes, and models edit it without stepping on each other.",
         ],
+        cta: "Discuss an AI-native product",
       },
     },
-  },
-  {
-    slug: "rag-evaluation-harness",
-    title: "RAG Evaluation Harness",
-    year: "2026",
-    eyebrow: "AI quality system",
-    summary:
-      "A test harness for retrieval-augmented generation pipelines with repeatable datasets, regression scoring, and reviewer workflows.",
-    problem:
-      "Model updates improved some answers while silently degrading source coverage and factual consistency elsewhere.",
-    outcome:
-      "Added scenario suites, citation checks, and diffable scorecards so changes could be reviewed before release.",
-    stack: ["Python", "FastAPI", "LangChain", "pgvector", "Playwright"],
-    metrics: ["240 eval cases", "4 rubric dimensions", "CI gated releases"],
-    links: [
-      { label: "Case study", href: "/projects/rag-evaluation-harness" },
-      { label: "Repository", href: "https://github.com/" },
-    ],
-    color: "oxide",
-    icon: Network,
-  },
-  {
-    slug: "billing-workflow-engine",
-    title: "Billing Workflow Engine",
-    year: "2025",
-    eyebrow: "Backend architecture",
-    summary:
-      "A rules-driven billing workflow that handles subscriptions, prorations, invoice previews, and audit trails.",
-    problem:
-      "Billing behavior lived in scattered conditionals, making pricing changes risky and hard to explain to support.",
-    outcome:
-      "Moved policy into explicit workflow steps with event history, deterministic previews, and safer migrations.",
-    stack: ["Node.js", "Drizzle", "Postgres", "Stripe", "Temporal"],
-    metrics: ["99.98% job success", "18 workflow states", "full audit trail"],
-    links: [
-      { label: "Case study", href: "/projects/billing-workflow-engine" },
-      { label: "Repository", href: "https://github.com/" },
-    ],
-    color: "olive",
-    icon: GitBranch,
   },
 ];
 
