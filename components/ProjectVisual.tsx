@@ -1,9 +1,16 @@
 import { Project } from "@/lib/content";
+import { FunnelLoopsIsoStack } from "@/components/FunnelLoopsIsoStack";
 import { IsometricStack } from "@/components/IsometricStack";
+
+const isoStacks = {
+  "grivara-ops": IsometricStack,
+  funnelloops: FunnelLoopsIsoStack,
+} as const;
 
 export function ProjectVisual({ project, compact = false }: { project: Project; compact?: boolean }) {
   const Icon = project.icon;
-  const useIso = project.slug === "grivara-ops" && !compact;
+  const IsoStack = compact ? undefined : isoStacks[project.slug as keyof typeof isoStacks];
+  const useIso = Boolean(IsoStack);
 
   return (
     <figure
@@ -30,9 +37,9 @@ export function ProjectVisual({ project, compact = false }: { project: Project; 
             : "relative flex h-[230px] flex-col items-center justify-center gap-[18px]"
         }
       >
-        {useIso ? (
+        {IsoStack ? (
           <div className="flex w-full flex-col items-stretch gap-3">
-            <IsometricStack />
+            <IsoStack />
             <span className="text-center text-[0.66rem] uppercase tracking-[0.16em] text-dim">{project.eyebrow}</span>
           </div>
         ) : (
