@@ -4,6 +4,7 @@ import {
   Braces,
   Cpu,
   Database,
+  Filter,
   GitBranch,
   Network,
   ShieldCheck,
@@ -31,6 +32,7 @@ export type Project = {
     role: string;
     lede: string;
     thesis: string;
+    architectureTitle: string;
     architecture: {
       label: string;
       title: string;
@@ -46,7 +48,14 @@ export type Project = {
         | "workflow-kernel"
         | "dispatch-funnel"
         | "agent-boundary"
-        | "offline-replay";
+        | "offline-replay"
+        | "funnel-spec"
+        | "skill-runtime"
+        | "validation-gate"
+        | "artifact-sync"
+        | "integration-outbox"
+        | "event-pipeline"
+        | "benchmark-harness";
       body: string[];
       principle?: string;
       details?: string[];
@@ -111,6 +120,7 @@ export const projects: Project[] = [
       lede: "Most teams start an agentic product with a chat box. I started with authority.",
       thesis:
         "An agent is only as trustworthy as the system that defines what it can know, what it may change, and how every decision can be reconstructed. I built Grivara OPS from that premise: first model the operation, then make it durable, then expose carefully governed capabilities to agents. The intelligence sits on top of the truth; it never replaces it.",
+      architectureTitle: "One authority, multiple execution surfaces.",
       architecture: [
         {
           label: "01 / Surfaces",
@@ -242,6 +252,180 @@ export const projects: Project[] = [
           "Grivara OPS looks like a field-operations product because that is the problem users need solved. Underneath, it is a carefully layered decision system: a shared operational model, structural tenancy, deterministic workflows, explainable recommendation engines, offline intent, and a capability boundary that lets agents participate without becoming the authority.",
           "That sequence was deliberate. I did not add governance after an agent demo became dangerous. I designed the truth, permissions, durability, simulation, and audit surfaces first, then gave models the smallest useful window into them. It is slower than building a chatbot and calling it a platform. It is also how you build an agentic system that can earn more autonomy over time.",
           "This is the kind of work I want to keep doing: finding the small set of architectural decisions that let a complex product move quickly without losing control, then carrying those decisions all the way from database invariants to the interface in a technician's hand.",
+        ],
+      },
+    },
+  },
+  {
+    slug: "funnelloops",
+    title: "FunnelLoops",
+    year: "2026",
+    eyebrow: "AI funnel platform",
+    summary:
+      "An AI-native funnel platform where a sandboxed agent and a visual builder edit the same validated funnel spec, with versioned publishing, CRM sync, and real-time analytics.",
+    problem:
+      "Funnel tools make marketers assemble pages, logic, integrations, and analytics by hand. AI generators promise to do it for them, but they produce one-shot output that cannot be edited safely afterwards, so every revision risks breaking the flow it sits in.",
+    outcome:
+      "A production-shaped SaaS spanning a visual canvas builder, a published funnel runtime, a skills-driven agent service, a declarative integration platform, and a real-time analytics pipeline. FunnelLoops is in pre-launch development.",
+    stack: [
+      "Next.js 16",
+      "TypeScript",
+      "Convex",
+      "Rivet agentOS + Pi",
+      "Vercel AI Gateway",
+      "Zod",
+      "Tinybird",
+      "Better Auth + Polar",
+      "React Flow",
+    ],
+    metrics: [
+      "Skills-driven agent runtime",
+      "Validate-and-reject spec boundary",
+      "Real-time decision analytics",
+    ],
+    links: [{ label: "Visit FunnelLoops", href: "https://funnelloops.com" }],
+    color: "cyan",
+    icon: Filter,
+    caseStudy: {
+      stage: "Pre-launch",
+      role: "Product architecture · Full-stack engineering · Agent runtime design",
+      lede: "I stopped asking the model for perfect output and gave it a file to edit instead.",
+      thesis:
+        "FunnelLoops treats a marketing funnel as a typed document with strict semantics: steps, fields, routing, and actions in one flat spec. The agent works the way an engineer does. It reads the document, loads the skill the task needs, makes a surgical edit, and submits the result to a validator that rejects anything structurally broken. Everything else in the product, the canvas builder, versioned publishing, CRM integrations, and analytics, is built around that single document and the events it produces.",
+      architectureTitle: "One validated document, three kinds of editors.",
+      architecture: [
+        {
+          label: "01 / Surfaces",
+          title: "Three editors, one spec",
+          detail:
+            "A visual canvas builder for humans, a sandboxed agent for language, and a published runtime for visitors all read and write the same funnel document.",
+        },
+        {
+          label: "02 / Agent runtime",
+          title: "A VM, a file, and skills",
+          detail:
+            "A coding agent runs inside a micro-VM where the funnel is a JSON file it edits with jq, guided by markdown skill files loaded on demand.",
+        },
+        {
+          label: "03 / Data authority",
+          title: "Convex owns the truth",
+          detail:
+            "Funnels, immutable versions, teams, submissions, and integration state live in one reactive backend; interfaces subscribe instead of parsing streams.",
+        },
+        {
+          label: "04 / Pipelines",
+          title: "Contracts at the edges",
+          detail:
+            "Canonical CRM entities sync through a change-data-capture outbox, and a Tinybird event pipeline turns funnel traffic into queryable decisions.",
+        },
+      ],
+      chapters: [
+        {
+          kicker: "01 / Product model",
+          title: "A funnel is a typed document, not a pile of pages",
+          visual: "funnel-spec",
+          body: [
+            "The visible promise is simple: describe a campaign and get a working funnel with landing pages, forms, routing, and follow-up actions. The difficult part is that a funnel is control flow. Conditional branches route a visitor by their answers, split tests weight traffic across variants, and actions fire when specific steps complete. Represent that as a loose collection of page configurations and every feature ends up fighting the data model.",
+            "So the spec is a single flat JSON document with strict semantics. Each step carries its routing inline as a discriminated union: linear with one next step, conditional with grouped conditions and a required fallback, split-test with weighted variants, and multi-path choices. Actions are top-level records that reference the step that triggers them. Eighteen typed field kinds cover capture. Editor concerns like generation status stay out of the spec entirely; the document describes the funnel, not the editing session that produced it.",
+            "Flatness was a deliberate decision about who edits this document. A deeply nested schema is pleasant to render and miserable to modify surgically. A flat document with inline routing can be navigated and patched with a single query language, which is exactly how the agent works on it. And because the published runtime executes the same routing the builder draws and the analytics pipeline records, the three surfaces cannot drift into different opinions about what the funnel does.",
+          ],
+          principle: "Design the artifact for the hands that will edit it, human or model.",
+          details: [
+            "Inline discriminated-union routing",
+            "Actions reference their trigger steps",
+            "Eighteen typed field kinds",
+            "No editor state inside the spec",
+          ],
+        },
+        {
+          kicker: "02 / Agent runtime",
+          title: "Give the agent a filesystem, not a flowchart",
+          visual: "skill-runtime",
+          body: [
+            "Most AI builders hardcode a chain: prompt in, structured output out, merge and hope. Every product change means re-engineering the chain. FunnelLoops runs a coding agent inside a sandboxed micro-VM instead. The funnel spec is mounted at /funnel.json, and the agent edits it with bash and jq: surgical patches to the fields that changed, never a rewrite of the whole file.",
+            "Domain knowledge lives in seven markdown skill files behind an index. The agent reads the index first, then loads only the skill the task needs: planning a funnel from scratch, editing fields, routing, field types, action intents, layout, or publishing. Skills contain literal jq recipes for common operations. Changing how the product builds funnels means editing prose, not redeploying orchestration code.",
+            "The system prompt is a few sentences that point at the index and set the working rules. Model choice is a gateway configuration, not an architecture decision, so models can be swapped and benchmarked without touching the runtime. Inside the VM, permission prompts are auto-approved because the sandbox is the boundary that matters: the VM holds no credentials and no network access to the business. Every effect leaves through explicit host commands.",
+          ],
+          principle: "Ship knowledge as documents the agent loads, not chains you recompile.",
+          details: [
+            "Sandboxed micro-VM with a virtual filesystem",
+            "Seven markdown skills behind an index",
+            "Surgical jq edits over full rewrites",
+            "Model routing through one gateway config",
+          ],
+        },
+        {
+          kicker: "03 / Correctness boundary",
+          title: "Validate and reject beats generate and repair",
+          visual: "validation-gate",
+          body: [
+            "The common failure mode of AI builders is accepting whatever the model returns and patching it afterwards with repair code that grows forever and still misses cases. FunnelLoops inverts that: the platform never repairs agent output. Every sync runs the document through the schema and then through a structural validator that understands what a funnel must be.",
+            "Structure means real graph properties. At least one step must terminate the funnel. Every routing target must exist. A depth-first search rejects cycles, and a breadth-first walk from the entry step rejects orphans a visitor could never reach. Split-test weights must sum to one hundred. Conditional routing must declare a fallback. A violation rejects the sync with an error message written for the agent to act on, and the agent retries with a fix.",
+            "This moves the correctness contract into the platform, where it is testable and versioned, and it makes the agent allowed to be wrong cheaply. A rejected edit costs one round trip. A silently repaired edit costs trust, because the funnel that ships is no longer the funnel anyone asked for. The same validator guards the human path from the builder, so there is exactly one definition of a well-formed funnel.",
+          ],
+          principle: "Reject broken output with an explanation; never silently repair it.",
+        },
+        {
+          kicker: "04 / State and streaming",
+          title: "The database is the product; the stream is presentation",
+          visual: "artifact-sync",
+          body: [
+            "Streaming generated JSON to the browser and reconstructing state there is a race condition dressed up as UX: partial data on disconnect, duplicate application on retry, and a client that has to understand the model's output format. FunnelLoops persists artifact-first. The agent's toolkit exposes four commands, sync, publish, analytics, and load, and each executes on the host through an authenticated gateway into Convex. The VM never sees a credential.",
+            "After every turn, an auto-sync pass reads the file, debounces rapid edits, deduplicates with a content hash so identical states never write twice, validates, and only then persists. The builder does not parse the chat stream for state. It subscribes to Convex and re-renders when the document actually changed, which is the same path it uses when a human edits on the canvas.",
+            "The chat still streams, because watching the work happen is part of the product. An adapter translates agent events into the AI SDK wire protocol so a standard chat client renders tokens and tool calls, plus one custom event that tells the canvas the funnel changed. The presentation channel and the truth channel stay separate, and only one of them can create facts.",
+          ],
+          principle: "Let the stream animate the work; let the database own the outcome.",
+          details: [
+            "Four host commands behind an authenticated gateway",
+            "Debounced, hash-deduped auto-sync",
+            "Convex subscriptions drive the canvas",
+            "Wire-protocol adapter for the chat UI only",
+          ],
+        },
+        {
+          kicker: "05 / Integrations",
+          title: "One canonical contact, many CRMs",
+          visual: "integration-outbox",
+          body: [
+            "A funnel that captures leads is only useful if the leads land where the team works, which means CRM integrations, which is where most platforms accumulate bespoke connector code. FunnelLoops has an integration SDK where a connector is a declarative configuration: auth, field maps, object capabilities, and webhook handling. Adapters, manifests, and tools are generated from that config, and contract tests hold every connector to the same behavioral suite.",
+            "Sync is built on canonical entities. Contacts, leads, companies, and deals have typed core fields plus provider references, so one record can be linked to several external systems with per-provider sync state. Outbound changes flow through a change-data-capture outbox with payload-hash deduplication and bounded retries. Inbound webhooks are signature-verified, made idempotent by event ID, and resolved back to the canonical record.",
+            "HubSpot is the production-ready reference: OAuth, upsert-by-email semantics, deletes that treat an already-missing record as success, and cursor pagination. The point of the SDK is that the second connector is configuration plus a thin override file, not a fork of the first one.",
+          ],
+          principle: "Meet external systems with contracts and idempotency, not bespoke glue.",
+        },
+        {
+          kicker: "06 / Analytics",
+          title: "Every visitor decision becomes a queryable event",
+          visual: "event-pipeline",
+          body: [
+            "A funnel is an experiment, and an experiment without measurement is decoration. Published funnels emit an eighteen-type event taxonomy through a batching SDK: views, starts, submits, completes, and abandons, field-level focus and error events, routing decisions, and automation and integration outcomes. Each row is denormalized with device, geography, and attribution so questions do not require joins at query time.",
+            "Tinybird ingests those events into raw datasources and materialized views, and a set of pipes serves the product surfaces: the conversion funnel, per-step breakdowns, time series, and a journey view that renders the paths visitors actually took as a Sankey diagram.",
+            "Recording routing decisions as events is the detail that matters. Because the runtime logs which branch fired and why, the journey view is ground truth rather than inference, and a split test can be read directly from the data. The same pipeline feeds back into the agent through a read-only analytics command: ask where the funnel leaks, and it answers from measurements instead of guessing.",
+          ],
+          principle: "Instrument decisions, not just pageviews; that is what makes analytics actionable.",
+        },
+        {
+          kicker: "07 / Verification",
+          title: "Benchmarks that speak the user's language",
+          visual: "benchmark-harness",
+          body: [
+            "The failure mode of agent demos is testing the happy path with developer-shaped prompts. The FunnelLoops benchmark harness drives the agent with natural language only, the way a customer would type it: make the email field in the contact form optional. The agent has to read the skill index, load the right skill, derive the jq edit, and execute it. Nothing in the harness hints at the mechanism.",
+            "Eleven operations across four categories, field editing, routing changes, step operations, and full funnel creation, each end with a programmatic verifier that reads the resulting document back and asserts the change actually happened. The current suite passes eleven of eleven. Underneath, sixty-four unit tests cover the schema, the structural validator, migration, the stream adapter, and auto-sync.",
+            "The tests I care most about are the ones over the skill files themselves. When product knowledge is prose, prose becomes an interface, and an interface needs tests: frontmatter shape, index consistency, and referenced commands. A skill edit that would confuse the agent fails in CI before it ever reaches one.",
+          ],
+          principle: "If users will ask in natural language, benchmark in natural language.",
+          relatedArticle: {
+            slug: "designing-evaluations-that-catch-real-regressions",
+            label: "Related: designing evaluations that catch real regressions",
+          },
+        },
+      ],
+      closing: {
+        title: "The real product is a document three kinds of editors can trust",
+        body: [
+          "FunnelLoops looks like an AI funnel builder because that is the job users hire it for. Underneath, it is a document system with strict semantics and several editors: a canvas for humans, a sandboxed agent for language, and a runtime for visitors, all converging on one validated spec in one reactive database, with contracts at every edge that touches the outside world.",
+          "The sequence was deliberate. The spec, the validator, and the persistence gateway came first; only then did the agent get its filesystem, its jq, and its skills. That ordering is what makes the system safe to grow. New capability is a new markdown skill, and it arrives without weakening anything, because validation and the gateway do not move.",
+          "This is the kind of work I want to keep doing: finding the representation that makes a hard product tractable, then building the boundaries that let humans, runtimes, and models edit it without stepping on each other.",
         ],
       },
     },

@@ -89,7 +89,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   id="architecture-heading"
                   className="m-0 max-w-[620px] font-heading text-[2.55rem] font-medium leading-[1.08] max-[640px]:text-[2.05rem]"
                 >
-                  One authority, multiple execution surfaces.
+                  {project.caseStudy.architectureTitle}
                 </h2>
               </div>
               <div className="grid grid-cols-4 border-t border-b border-line max-[840px]:grid-cols-2 max-[640px]:grid-cols-1">

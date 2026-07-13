@@ -32,6 +32,15 @@ import {
   X,
 } from "lucide-react";
 import type { Project } from "@/lib/content";
+import {
+  ArtifactSync,
+  BenchmarkHarness,
+  EventPipeline,
+  FunnelSpec,
+  IntegrationOutbox,
+  SkillRuntime,
+  ValidationGate,
+} from "@/components/FunnelLoopsDiagrams";
 import { OperationalGraphVisual } from "@/components/OperationalGraphVisual";
 
 type DiagramKind = NonNullable<Project["caseStudy"]>["chapters"][number]["visual"];
@@ -78,6 +87,41 @@ const insights: Record<DiagramKind, AudienceInsights> = {
     cto: "The mobile client converges on server authority instead of becoming a second source of truth.",
     engineering: "Persisted optimistic caches and a durable mutation outbox survive restarts and replay in order.",
   },
+  "funnel-spec": {
+    ceo: "Every surface of the product agrees on what the funnel does, so revisions stop breaking campaigns.",
+    cto: "One flat spec with inline routing keeps the builder, runtime, and analytics from drifting apart.",
+    engineering: "A discriminated routing union and top-level trigger-referenced actions make the document patchable with one query language.",
+  },
+  "skill-runtime": {
+    ceo: "The AI improves by writing better playbooks, not by rebuilding the product.",
+    cto: "A sandboxed VM bounds what the agent can touch, and gateway routing keeps model choice a config change.",
+    engineering: "Skills are markdown with jq recipes; the agent loads one per task and edits /funnel.json surgically.",
+  },
+  "validation-gate": {
+    ceo: "Customers never receive a funnel that routes visitors into a dead end.",
+    cto: "Correctness lives in a versioned, testable validator instead of scattered repair code.",
+    engineering: "Schema plus graph checks reject cycles, orphans, bad weights, and missing fallbacks with errors the agent can act on.",
+  },
+  "artifact-sync": {
+    ceo: "What users see on the canvas is always what was actually saved.",
+    cto: "The database is the single source of truth; the chat stream carries no state.",
+    engineering: "Debounced, hash-deduped auto-sync persists through an authenticated gateway; the builder re-renders from Convex subscriptions.",
+  },
+  "integration-outbox": {
+    ceo: "Leads reach the CRM the team already uses, reliably, without duplicate records.",
+    cto: "Connectors are declarative configs held to one contract-test suite, so the catalog can grow safely.",
+    engineering: "Canonical entities with external refs sync through a CDC outbox with hash dedupe; webhooks are signature-verified and idempotent.",
+  },
+  "event-pipeline": {
+    ceo: "Teams see where visitors leak out of the funnel and which variant actually wins.",
+    cto: "A real-time pipeline serves both dashboards and the agent from the same measured events.",
+    engineering: "Eighteen event types, denormalized rows, and materialized views make routing decisions queryable ground truth.",
+  },
+  "benchmark-harness": {
+    ceo: "The AI is measured on the sentences customers actually type, not on developer demos.",
+    cto: "Programmatic verifiers give a pass rate that can gate releases and compare models.",
+    engineering: "Natural-language prompts exercise skill discovery end to end, and the skill markdown itself is under test.",
+  },
 };
 
 const titles: Record<DiagramKind, string> = {
@@ -88,6 +132,13 @@ const titles: Record<DiagramKind, string> = {
   "dispatch-funnel": "Qualify first, rank second",
   "agent-boundary": "The governed agent harness",
   "offline-replay": "Two durable channels, one authority",
+  "funnel-spec": "One document, four routing shapes",
+  "skill-runtime": "A VM, a file, and seven skills",
+  "validation-gate": "Accept valid funnels, reject the rest",
+  "artifact-sync": "Truth and presentation, separated",
+  "integration-outbox": "Canonical entities, contract edges",
+  "event-pipeline": "From visitor decision to query",
+  "benchmark-harness": "Measured the way users ask",
 };
 
 // Shared box treatment for .diagram-box / .dispatch-stage (icon + strong + small, centered).
@@ -739,6 +790,13 @@ function DiagramContent({ kind }: { kind: DiagramKind }) {
     case "dispatch-funnel": return <DispatchFunnel />;
     case "agent-boundary": return <AgentBoundary />;
     case "offline-replay": return <OfflineReplay />;
+    case "funnel-spec": return <FunnelSpec />;
+    case "skill-runtime": return <SkillRuntime />;
+    case "validation-gate": return <ValidationGate />;
+    case "artifact-sync": return <ArtifactSync />;
+    case "integration-outbox": return <IntegrationOutbox />;
+    case "event-pipeline": return <EventPipeline />;
+    case "benchmark-harness": return <BenchmarkHarness />;
   }
 }
 
